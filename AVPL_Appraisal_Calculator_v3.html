@@ -194,12 +194,18 @@ input.ri:focus{outline:none;border-color:var(--gold);background:#fff;}
     <div class="fl"><label>Market standard (global default)</label>
       <div class="fr2">
         <div class="tg">
-          <button class="tb" id="bl" onclick="sm('low')">Low +5%</button>
+          <button class="tb" id="bl" onclick="sm('low')">Low</button>
           <button class="tb ac" id="bc" onclick="sm('correct')">Correct</button>
           <button class="tb" id="bh" onclick="sm('high')">High</button>
         </div>
         <span class="vl" id="mo" style="color:var(--green)">+0%</span>
       </div>
+    </div>
+    <div class="fl"><label>Low market correction % (added to base)</label>
+      <div class="fr2"><input type="range" id="low-corr" min="0" max="15" value="5" step="0.5" oninput="rc()"><span class="vl" id="lco" style="color:#E57C00">+5%</span></div>
+    </div>
+    <div class="fl"><label>High market correction % (deducted from base)</label>
+      <div class="fr2"><input type="range" id="high-corr" min="0" max="15" value="5" step="0.5" oninput="rc()"><span class="vl" id="hco" style="color:var(--blue)">-5%</span></div>
     </div>
   </div>
   <div class="dv"></div>
@@ -387,15 +393,21 @@ let GM='correct';
 function sm(v){
   GM=v;
   ['low','correct','high'].forEach(m=>{document.getElementById('b'+m[0]).className='tb'+(m===v?' a'+m[0]:'');});
+  const lc=+document.getElementById('low-corr').value||5;
+  const hc=+document.getElementById('high-corr').value||5;
   const mo=document.getElementById('mo');
-  mo.textContent=v==='low'?'+5%':'+0%';
-  mo.style.color=v==='low'?'#7A3F00':v==='correct'?'var(--green)':'var(--blue)';
+  if(v==='low'){mo.textContent='+'+lc+'%';mo.style.color='#7A3F00';}
+  else if(v==='high'){mo.textContent='-'+hc+'%';mo.style.color='var(--blue)';}
+  else{mo.textContent='+0%';mo.style.color='var(--green)';}
   rc();
 }
 
 function ce(e,base,prate,oR,nR){
   const ov=OV[e.n]||{market:null,promo:false,rating:4};
-  const mkt=ov.market||GM,mb=mkt==='low'?5:0;
+  const mkt=ov.market||GM;
+  const lc=+document.getElementById('low-corr').value||5;
+  const hc=+document.getElementById('high-corr').value||5;
+  const mb=mkt==='low'?lc:mkt==='high'?-hc:0;
   const rat=Math.max(0,Math.min(5,parseFloat(ov.rating)||0));
   const rM=interp(rat);
   const{m:tM,l,mo}=getTen(e.join);
@@ -438,8 +450,17 @@ function delEmp(n){
 function rc(){
   const base=+document.getElementById('base').value,prate=+document.getElementById('pr').value;
   const oR=+document.getElementById('or').value||83,nR=+document.getElementById('nr').value||88;
+  const lc=+document.getElementById('low-corr').value||5;
+  const hc=+document.getElementById('high-corr').value||5;
   document.getElementById('bo').textContent=base.toFixed(1)+'%';
   document.getElementById('po').textContent=prate+'%';
+  document.getElementById('lco').textContent='+'+lc+'%';
+  document.getElementById('hco').textContent='-'+hc+'%';
+  // refresh mo label
+  const mo=document.getElementById('mo');
+  if(GM==='low'){mo.textContent='+'+lc+'%';mo.style.color='#7A3F00';}
+  else if(GM==='high'){mo.textContent='-'+hc+'%';mo.style.color='var(--blue)';}
+  else{mo.textContent='+0%';mo.style.color='var(--green)';}
   let tc=0,tn=0,c1=0,c2=0,c0=0;
   EE.forEach(e=>{const r=ce(e,base,prate,oR,nR);tc+=e.usd;tn+=r.nU;r.l==='full'?c1++:r.l==='partial'?c2++:c0++;});
   const nd=tn-tc;
@@ -526,6 +547,8 @@ function renderReport(){
   const oR=+document.getElementById('or').value||83,nR=+document.getElementById('nr').value||88;
   const filterMgr=document.getElementById('rp-mgr-filter').value;
   const showUSD=document.getElementById('show-usd-change').checked;
+  const lc=+document.getElementById('low-corr').value||5;
+  const hc=+document.getElementById('high-corr').value||5;
   const today=new Date().toLocaleDateString('en-GB',{day:'2-digit',month:'long',year:'numeric'});
 
   // Group by manager
@@ -621,7 +644,7 @@ function renderReport(){
 
   html+=`<div class="rep-footer">
     Confidential · Altaa Vistaa Business Solutions · Generated ${today}<br>
-    Exchange rates: Old ₹${oR}/$ → New ₹${nR}/$ · Base appraisal: ${base}% · Promotion bonus: ${prate}%
+    Exchange rates: Old ₹${oR}/$ → New ₹${nR}/$ · Base: ${base}% · Promo: ${prate}% · Market: Low +${lc}% / High -${hc}%
   </div></div>`;
 
   document.getElementById('rp-body').innerHTML=html;
@@ -663,6 +686,8 @@ function copyEmailBody(){
   const oR=+document.getElementById('or').value||83,nR=+document.getElementById('nr').value||88;
   const filterMgr=document.getElementById('rp-mgr-filter').value;
   const showUSD=document.getElementById('show-usd-change').checked;
+  const lc=+document.getElementById('low-corr').value||5;
+  const hc=+document.getElementById('high-corr').value||5;
   const today=new Date().toLocaleDateString('en-GB',{day:'2-digit',month:'long',year:'numeric'});
   let text=`APPRAISAL REPORT — FY 2025-26\nAltaa Vistaa Business Solutions · Vituity India Team\nGenerated: ${today}\n`;
   text+=`Parameters: Base ${base}% · Promotion ${prate}% · Rate ₹${oR}/$ → ₹${nR}/$\n`;
