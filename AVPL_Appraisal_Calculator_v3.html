@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Appraisal Calculator — Altaa Vistaa Business Solutions</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --gold:#F5A623;--gold-light:#FEF3DC;--gold-mid:#FDE8B0;
+  --charcoal:#4A4A5A;--charcoal-light:#6B6B7E;--charcoal-dark:#2E2E3A;
+  --bg:#F4F4F7;--card:#FFFFFF;--border:#E2E2EC;--text:#2E2E3A;--muted:#7B7B8F;
+  --green:#1A7A5E;--green-bg:#E6F5EF;--red:#B03030;--red-bg:#FCECEC;--blue:#2255AA;--blue-bg:#EAF0FB;
+}
+body{background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,sans-serif;font-size:13px;color:var(--text);min-height:100vh;}
+.header{background:var(--charcoal-dark);padding:0;border-bottom:3px solid var(--gold);}
+.header-inner{max-width:1400px;margin:0 auto;padding:1.1rem 1.5rem;display:flex;align-items:center;justify-content:space-between;}
+.hco{color:var(--gold);font-size:10px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;}
+.hti{color:#fff;font-size:19px;font-weight:700;}
+.hsu{color:rgba(255,255,255,0.4);font-size:11px;margin-top:1px;}
+.header-right{display:flex;gap:10px;align-items:center;}
+.hbg{background:var(--gold);color:var(--charcoal-dark);font-size:10px;font-weight:700;padding:4px 13px;border-radius:20px;letter-spacing:0.05em;}
+.emp-count{background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.6);font-size:11px;padding:4px 12px;border-radius:20px;border:1px solid rgba(255,255,255,0.12);}
+.main{max-width:1400px;margin:0 auto;padding:1.25rem 1.25rem 3rem;}
+.card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1.1rem 1.25rem;margin-bottom:1rem;box-shadow:0 1px 4px rgba(0,0,0,0.05);}
+.stitle{font-size:10px;font-weight:700;color:var(--charcoal-light);text-transform:uppercase;letter-spacing:0.09em;margin-bottom:0.85rem;display:flex;align-items:center;gap:6px;}
+.stitle::before{content:'';width:3px;height:12px;background:var(--gold);border-radius:2px;display:inline-block;flex-shrink:0;}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;}
+@media(max-width:700px){.two-col{grid-template-columns:1fr;}}
+.mx{display:grid;grid-template-columns:repeat(6,1fr);gap:7px;margin-bottom:8px;}
+.mc{background:var(--bg);border:1.5px solid var(--border);border-radius:8px;padding:8px 4px;text-align:center;transition:border-color 0.15s;}
+.mc:hover{border-color:var(--gold);background:var(--gold-light);}
+.mc .r{font-size:15px;font-weight:700;color:var(--charcoal);}
+.mc .m{font-size:11px;color:var(--muted);margin-top:1px;}
+.mc .a{font-size:10px;color:var(--gold);font-weight:700;margin-top:2px;}
+.note{font-size:11px;color:var(--muted);line-height:1.85;margin-top:8px;padding:8px 12px;background:var(--bg);border-radius:7px;border-left:3px solid var(--gold);}
+.note b{color:var(--charcoal);}
+.frow{display:flex;gap:5px;align-items:center;flex-wrap:wrap;font-size:11px;margin-top:10px;}
+.fb{background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:4px 10px;font-weight:500;color:var(--charcoal);}
+.fbg{background:var(--gold-light);border-color:var(--gold-mid);color:#7A4F00;font-weight:600;}
+.fbs{background:var(--charcoal-dark);color:#fff;border-color:var(--charcoal-dark);font-weight:600;}
+.fo{color:var(--muted);font-size:14px;font-weight:500;}
+.fl{display:flex;flex-direction:column;gap:5px;}
+.fl label{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;}
+.fr2{display:flex;align-items:center;gap:8px;}
+.fr2 input[type=range]{flex:1;accent-color:var(--gold);cursor:pointer;}
+.vl{font-size:13px;font-weight:700;color:var(--charcoal);min-width:38px;text-align:right;}
+.tg{display:flex;gap:4px;}
+.tb{padding:5px 12px;border-radius:6px;border:1.5px solid var(--border);background:var(--bg);font-size:11px;font-weight:600;cursor:pointer;color:var(--muted);transition:all 0.15s;}
+.tb.al{background:#FFF3E0;border-color:#E57C00;color:#7A3F00;}
+.tb.ac{background:var(--green-bg);border-color:var(--green);color:var(--green);}
+.tb.ah{background:var(--blue-bg);border-color:var(--blue);color:var(--blue);}
+.dv{border:none;border-top:1px solid var(--border);margin:1rem 0;}
+.rr{display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap;}
+.rb{display:flex;flex-direction:column;gap:4px;flex:1;min-width:80px;}
+.rb label{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;}
+.rb input[type=number]{padding:7px 10px;border-radius:7px;border:1.5px solid var(--border);font-size:14px;font-weight:700;color:var(--charcoal);background:var(--bg);width:100%;}
+.rb input:focus{outline:none;border-color:var(--gold);background:#fff;}
+.rate-arrow{font-size:22px;color:var(--gold);font-weight:700;padding-bottom:4px;}
+.rate-note{flex:2;font-size:11px;color:var(--muted);line-height:1.7;min-width:160px;}
+.sg{display:grid;grid-template-columns:repeat(auto-fit,minmax(100px,1fr));gap:8px;}
+.mt{background:var(--bg);border:1px solid var(--border);border-radius:9px;padding:0.85rem 1rem;position:relative;overflow:hidden;}
+.mt::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;background:var(--gold);}
+.ml{font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:5px;}
+.mv{font-size:20px;font-weight:700;color:var(--charcoal);}
+.mv.gn{color:var(--green)!important;} .mv.rd{color:var(--red)!important;}
+.add-form{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;margin-bottom:10px;padding:12px;background:var(--bg);border-radius:9px;border:1px dashed var(--border);}
+.af{display:flex;flex-direction:column;gap:3px;}
+.af label{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em;}
+.af input{padding:6px 9px;border-radius:6px;border:1.5px solid var(--border);font-size:12px;font-weight:500;color:var(--charcoal);background:#fff;width:100%;}
+.af input:focus{outline:none;border-color:var(--gold);}
+.btn{padding:8px 18px;border-radius:7px;border:none;font-size:12px;font-weight:700;cursor:pointer;transition:all 0.15s;letter-spacing:0.02em;}
+.btn-gold{background:var(--gold);color:var(--charcoal-dark);}
+.btn-gold:hover{background:#e09612;}
+.btn-outline{background:#fff;color:var(--charcoal);border:1.5px solid var(--border);font-size:12px;font-weight:700;padding:7px 16px;border-radius:7px;cursor:pointer;}
+.btn-outline:hover{border-color:var(--gold);color:var(--gold);}
+.sr{display:flex;gap:7px;margin-bottom:0.9rem;align-items:center;flex-wrap:wrap;}
+.sr input[type=text]{flex:1;min-width:140px;padding:7px 12px;border-radius:8px;border:1.5px solid var(--border);font-size:12px;background:var(--bg);color:var(--charcoal);}
+.sr input[type=text]:focus{outline:none;border-color:var(--gold);background:#fff;}
+select{padding:6px 9px;border-radius:7px;border:1.5px solid var(--border);background:var(--bg);color:var(--charcoal);font-size:11px;font-weight:600;cursor:pointer;}
+select:focus{outline:none;border-color:var(--gold);}
+.tw{overflow-x:auto;border-radius:9px;border:1px solid var(--border);}
+table{width:100%;border-collapse:collapse;font-size:11.5px;}
+thead{background:var(--charcoal-dark);}
+th{font-size:9.5px;font-weight:700;color:rgba(255,255,255,0.65);text-align:left;padding:9px 10px;white-space:nowrap;letter-spacing:0.04em;}
+td{padding:7px 10px;border-bottom:1px solid var(--border);white-space:nowrap;vertical-align:middle;}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:#F7F7FA;}
+tr.ine td{opacity:0.5;}
+.bi{display:inline-block;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;}
+.bi.e{background:var(--green-bg);color:var(--green);}
+.bi.p{background:var(--blue-bg);color:var(--blue);}
+.bi.n{background:var(--red-bg);color:var(--red);}
+input.ri{width:54px;padding:4px 6px;border-radius:5px;border:1.5px solid var(--border);background:var(--bg);color:var(--charcoal);font-size:11px;font-weight:700;text-align:center;}
+input.ri:focus{outline:none;border-color:var(--gold);background:#fff;}
+.mb{display:inline-block;background:var(--gold-light);color:#7A4F00;border:1px solid var(--gold-mid);border-radius:4px;padding:2px 7px;font-size:10px;font-weight:700;}
+.pc{display:inline-block;padding:2px 7px;border-radius:4px;font-size:10px;font-weight:700;background:var(--green-bg);color:var(--green);}
+.del-btn{background:none;border:none;cursor:pointer;color:var(--muted);font-size:14px;padding:2px 5px;border-radius:4px;}
+.del-btn:hover{background:var(--red-bg);color:var(--red);}
+
+/* REPORT PANEL */
+.report-panel{position:fixed;top:0;right:-100%;width:min(680px,100vw);height:100vh;background:#fff;box-shadow:-4px 0 30px rgba(0,0,0,0.15);z-index:1000;transition:right 0.3s ease;display:flex;flex-direction:column;}
+.report-panel.open{right:0;}
+.rp-header{background:var(--charcoal-dark);padding:1rem 1.25rem;display:flex;align-items:center;justify-content:space-between;border-bottom:3px solid var(--gold);flex-shrink:0;}
+.rp-title{color:#fff;font-size:15px;font-weight:700;}
+.rp-sub{color:rgba(255,255,255,0.45);font-size:11px;margin-top:2px;}
+.rp-close{background:rgba(255,255,255,0.1);border:none;color:#fff;width:30px;height:30px;border-radius:6px;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;}
+.rp-close:hover{background:rgba(255,255,255,0.2);}
+.rp-controls{padding:12px 1.25rem;border-bottom:1px solid var(--border);display:flex;gap:8px;align-items:center;flex-wrap:wrap;flex-shrink:0;background:#FAFAFA;}
+.rp-manager-sel{flex:1;min-width:160px;}
+.rp-body{flex:1;overflow-y:auto;padding:1.25rem;}
+.rp-actions{padding:12px 1.25rem;border-top:1px solid var(--border);display:flex;gap:8px;flex-shrink:0;background:#FAFAFA;}
+
+/* REPORT CONTENT */
+.report-content{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;}
+.rep-header{text-align:center;margin-bottom:1.5rem;padding-bottom:1rem;border-bottom:2px solid var(--gold);}
+.rep-company{font-size:11px;font-weight:700;color:var(--gold);letter-spacing:0.1em;text-transform:uppercase;}
+.rep-title{font-size:20px;font-weight:700;color:var(--charcoal-dark);margin-top:4px;}
+.rep-sub{font-size:11px;color:var(--muted);margin-top:3px;}
+.rep-date{font-size:10px;color:var(--muted);margin-top:6px;}
+.mgr-block{margin-bottom:2rem;break-inside:avoid;}
+.mgr-name-bar{background:var(--charcoal-dark);color:#fff;padding:8px 14px;border-radius:8px 8px 0 0;display:flex;justify-content:space-between;align-items:center;}
+.mgr-name{font-size:13px;font-weight:700;}
+.mgr-stats{font-size:10px;color:rgba(255,255,255,0.6);display:flex;gap:14px;}
+.mgr-stat span{color:var(--gold);font-weight:700;}
+.rep-table{width:100%;border-collapse:collapse;border:1px solid var(--border);border-top:none;border-radius:0 0 8px 8px;overflow:hidden;}
+.rep-table th{background:#F4F4F7;font-size:9.5px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;padding:7px 10px;text-align:left;border-bottom:1px solid var(--border);}
+.rep-table td{padding:8px 10px;font-size:12px;border-bottom:1px solid var(--border);color:var(--text);}
+.rep-table tr:last-child td{border-bottom:none;}
+.rep-table tr:hover td{background:#F9F9FC;}
+.hike-pill{display:inline-block;padding:2px 9px;border-radius:20px;font-size:11px;font-weight:700;}
+.hike-pos{background:var(--green-bg);color:var(--green);}
+.hike-zero{background:var(--red-bg);color:var(--red);}
+.mgr-total-row td{background:#FAFAFA;font-weight:700;font-size:11px;color:var(--charcoal);border-top:1.5px solid var(--border);}
+.no-data{text-align:center;padding:3rem;color:var(--muted);font-size:13px;}
+.rep-footer{margin-top:1.5rem;padding-top:1rem;border-top:1px solid var(--border);text-align:center;font-size:10px;color:var(--muted);line-height:1.7;}
+.overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.3);z-index:999;display:none;}
+.overlay.open{display:block;}
+.print-only{display:none;}
+@media print{
+  .header,.report-panel,.overlay,.btn,.del-btn,.sr,.add-form,.rp-controls,.rp-actions,.rp-close{display:none!important;}
+  .print-only{display:block;}
+  .report-content{padding:20px;}
+  .mgr-block{page-break-inside:avoid;margin-bottom:24px;}
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-inner">
+    <div>
+      <div class="hco">Altaa Vistaa Business Solutions</div>
+      <div class="hti">Appraisal Calculator</div>
+      <div class="hsu">Vituity India Team · FY 2025–26</div>
+    </div>
+    <div class="header-right">
+      <div class="emp-count" id="emp-count-badge">74 Employees</div>
+      <button class="btn btn-gold" onclick="openReport()" style="font-size:12px;padding:7px 16px;">📋 Generate Report</button>
+    </div>
+  </div>
+</div>
+
+<div class="main">
+
+<div class="card">
+  <div class="stitle">Manager Rating → Multiplier Matrix</div>
+  <div class="mx">
+    <div class="mc"><div class="r">0</div><div class="m">×0.00</div><div class="a">No hike</div></div>
+    <div class="mc"><div class="r">1</div><div class="m">×0.25</div><div class="a">25%</div></div>
+    <div class="mc"><div class="r">2</div><div class="m">×0.50</div><div class="a">50%</div></div>
+    <div class="mc"><div class="r">3</div><div class="m">×0.75</div><div class="a">75%</div></div>
+    <div class="mc"><div class="r">4</div><div class="m">×1.00</div><div class="a">Full</div></div>
+    <div class="mc"><div class="r">5</div><div class="m">×1.50</div><div class="a">Super</div></div>
+  </div>
+  <div class="note">
+    <b>Fractional ratings interpolated:</b> e.g. 4.3 → ×1.15 &nbsp;·&nbsp; 2.5 → ×0.625<br>
+    <b>Tenure:</b> ≤31 Oct 2024 → ×1 (full) &nbsp;·&nbsp; 1 Nov 2024–30 Nov 2025 → months to 31 Mar 2026 ÷ 12 &nbsp;·&nbsp; After 30 Nov 2025 → ×0 (not eligible)
+  </div>
+  <div class="frow">
+    <span class="fb">Base %</span><span class="fo">×</span><span class="fb">Tenure mult</span><span class="fo">×</span><span class="fb">Rating mult</span><span class="fo">+</span><span class="fb fbg">Promotion %</span><span class="fo">=</span><span class="fb fbs">Final hike %</span>
+  </div>
+</div>
+
+<div class="card">
+  <div class="stitle">Global Parameters</div>
+  <div class="two-col">
+    <div class="fl"><label>Base appraisal %</label>
+      <div class="fr2"><input type="range" id="base" min="0" max="30" value="10" step="0.5" oninput="rc()"><span class="vl" id="bo">10%</span></div>
+    </div>
+    <div class="fl"><label>Promotion bonus %</label>
+      <div class="fr2"><input type="range" id="pr" min="1" max="30" value="5" step="1" oninput="rc()"><span class="vl" id="po">5%</span></div>
+    </div>
+    <div class="fl"><label>Market standard (global default)</label>
+      <div class="fr2">
+        <div class="tg">
+          <button class="tb" id="bl" onclick="sm('low')">Low +5%</button>
+          <button class="tb ac" id="bc" onclick="sm('correct')">Correct</button>
+          <button class="tb" id="bh" onclick="sm('high')">High</button>
+        </div>
+        <span class="vl" id="mo" style="color:var(--green)">+0%</span>
+      </div>
+    </div>
+  </div>
+  <div class="dv"></div>
+  <div class="stitle">Currency Conversion</div>
+  <div class="rr">
+    <div class="rb"><label>Old rate (₹/$)</label><input type="number" id="or" value="83" min="1" step="0.5" oninput="rc()"></div>
+    <div class="rate-arrow">→</div>
+    <div class="rb"><label>New rate (₹/$)</label><input type="number" id="nr" value="88" min="1" step="0.5" oninput="rc()"></div>
+    <div class="rate-note">New USD = (USD × old rate × (1 + hike%)) ÷ new rate<br>Ineligible: New USD = (USD × old rate) ÷ new rate</div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="stitle">Team Summary</div>
+  <div class="sg">
+    <div class="mt"><div class="ml">Total Employees</div><div class="mv" id="tot">74</div></div>
+    <div class="mt"><div class="ml">Full Cycle ×1</div><div class="mv gn" id="s1">—</div></div>
+    <div class="mt"><div class="ml">Partial Cycle</div><div class="mv" style="color:var(--blue)" id="s2">—</div></div>
+    <div class="mt"><div class="ml">Not Eligible</div><div class="mv rd" id="s0">—</div></div>
+    <div class="mt"><div class="ml">Current Cost (USD)</div><div class="mv" id="sc">—</div></div>
+    <div class="mt"><div class="ml">New Cost (USD)</div><div class="mv" id="sn">—</div></div>
+    <div class="mt"><div class="ml">Net Change (USD)</div><div class="mv" id="sd">—</div></div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="stitle">Employee Breakdown</div>
+  <div class="add-form">
+    <div class="af"><label>Name *</label><input type="text" id="new-name" placeholder="Full name"></div>
+    <div class="af"><label>Manager</label><input type="text" id="new-mgr" placeholder="Manager name"></div>
+    <div class="af"><label>Joining Date *</label><input type="date" id="new-join"></div>
+    <div class="af"><label>Salary (USD) *</label><input type="number" id="new-usd" placeholder="e.g. 25000" min="0"></div>
+    <div class="af" style="justify-content:flex-end;padding-top:16px;">
+      <button class="btn btn-gold" onclick="addEmp()">+ Add Employee</button>
+    </div>
+  </div>
+  <div class="sr">
+    <input type="text" id="sq" placeholder="🔍  Search by name or manager..." oninput="rt()">
+    <select id="fm" onchange="rt()"><option value="">All market</option><option value="low">Low (+5%)</option><option value="correct">Correct</option><option value="high">High</option></select>
+    <select id="fe" onchange="rt()"><option value="">All employees</option><option value="full">Full cycle</option><option value="partial">Partial cycle</option><option value="none">Not eligible</option></select>
+  </div>
+  <div class="tw">
+    <table>
+      <thead><tr>
+        <th>#</th><th>Employee</th><th>Manager</th><th>Joined</th><th>Tenure</th>
+        <th>Current $</th><th>Market</th><th>Promo</th><th>Rating</th><th>Mult</th>
+        <th>Ten×</th><th>Base%</th><th>↓Ten</th><th>↓Rat</th><th>+Pro</th>
+        <th>Final%</th><th>Old ₹</th><th>Hike ₹</th><th>New ₹</th>
+        <th>New $</th><th>$ Δ</th><th>%Δ</th><th>Del</th>
+      </tr></thead>
+      <tbody id="tb"></tbody>
+    </table>
+  </div>
+</div>
+</div>
+
+<!-- Overlay -->
+<div class="overlay" id="overlay" onclick="closeReport()"></div>
+
+<!-- Report Panel -->
+<div class="report-panel" id="reportPanel">
+  <div class="rp-header">
+    <div>
+      <div class="rp-title">📋 Appraisal Report</div>
+      <div class="rp-sub">Manager-wise summary with employee breakdown</div>
+    </div>
+    <button class="rp-close" onclick="closeReport()">✕</button>
+  </div>
+  <div class="rp-controls">
+    <select class="rp-manager-sel" id="rp-mgr-filter" onchange="renderReport()">
+      <option value="all">All Managers</option>
+    </select>
+    <label style="display:flex;align-items:center;gap:6px;font-size:11px;font-weight:600;color:var(--charcoal);cursor:pointer;white-space:nowrap;">
+      <input type="checkbox" id="show-usd-change" onchange="renderReport()" style="accent-color:var(--gold);width:14px;height:14px;">
+      Show USD Change
+    </label>
+    <button class="btn btn-gold" onclick="printReport()" style="font-size:11px;padding:6px 14px;">🖨️ Print / Save PDF</button>
+    <button class="btn-outline" onclick="copyEmailBody()" style="font-size:11px;">📧 Copy for Email</button>
+  </div>
+  <div class="rp-body" id="rp-body"></div>
+  <div class="rp-actions">
+    <div style="font-size:11px;color:var(--muted);line-height:1.6;">
+      💡 <b>To email:</b> Use "Copy for Email" → paste into Outlook body.<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;<b>To PDF:</b> Click "Print / Save PDF" → choose "Save as PDF" in printer dialog.
+    </div>
+  </div>
+</div>
+
+<script>
+const FC=new Date(2024,9,31),IC=new Date(2025,10,30),AE=new Date(2026,2,31);
+const AN=[[0,0],[1,.25],[2,.5],[3,.75],[4,1],[5,1.5]];
+function interp(r){
+  r=Math.max(0,Math.min(5,r));
+  for(let i=0;i<AN.length-1;i++){const[a,b]=AN[i],[c,d]=AN[i+1];if(r>=a&&r<=c)return+(b+(r-a)/(c-a)*(d-b)).toFixed(4);}
+  return 1.5;
+}
+function getTen(j){
+  const d=new Date(j);
+  if(d<=FC)return{m:1,l:'full',mo:null};
+  if(d>IC)return{m:0,l:'none',mo:0};
+  const mo=Math.max(0,(AE.getFullYear()-d.getFullYear())*12+(AE.getMonth()-d.getMonth()));
+  return{m:+(mo/12).toFixed(4),l:'partial',mo};
+}
+let EE=[
+  {n:1,name:"Naved Khan",mgr:"Katie Medlen",join:"2023-04-03",usd:21909},
+  {n:2,name:"Akshatha N",mgr:"Katie Medlen",join:"2023-10-25",usd:19917},
+  {n:3,name:"Pearl Michael",mgr:"Akriti Kumar/Traci Galazra",join:"2023-07-24",usd:18723},
+  {n:4,name:"Sharath Madhusudan",mgr:"Akriti Kumar/Traci Galazra",join:"2023-07-24",usd:14181},
+  {n:5,name:"Achuyta Sailesh",mgr:"Akriti Kumar/Traci Galazra",join:"2023-07-24",usd:16699},
+  {n:6,name:"Jayesh Gehani",mgr:"Akriti Kumar/Traci Galazra",join:"2023-07-24",usd:18723},
+  {n:7,name:"Valerian Pillay",mgr:"Akriti Kumar/Traci Galazra",join:"2023-08-07",usd:25426},
+  {n:8,name:"Neha Dhupad",mgr:"Akriti Kumar/Traci Galazra",join:"2023-08-21",usd:22493},
+  {n:9,name:"John Paul",mgr:"Akriti Kumar/Traci Galazra",join:"2024-02-05",usd:16566},
+  {n:10,name:"Mamta Bhosale",mgr:"Akriti Kumar/Traci Galazra",join:"2024-08-05",usd:18554},
+  {n:11,name:"J Jayasri",mgr:"Otilia Franco",join:"2023-04-17",usd:14061},
+  {n:12,name:"Alina Fathima",mgr:"Melissa Miracle",join:"2023-08-07",usd:23259},
+  {n:13,name:"A C Mary",mgr:"Jennifer Doaris",join:"2023-08-21",usd:19051},
+  {n:14,name:"Nitin Patil",mgr:"Janelle Cruz",join:"2024-02-05",usd:24021},
+  {n:15,name:"Ajay Singh Choudhary",mgr:"Janelle Cruz",join:"2024-03-04",usd:20708},
+  {n:16,name:"Mahesh Emani",mgr:"Otilia Franco",join:"2024-03-04",usd:16566},
+  {n:17,name:"Vipul Borule",mgr:"Jennifer Doaris",join:"2024-05-27",usd:16566},
+  {n:18,name:"Pradyut C",mgr:"Otilia Franco",join:"2024-05-27",usd:18223},
+  {n:19,name:"Tejaswini Nataraj",mgr:"Otilia Franco",join:"2024-05-27",usd:15023},
+  {n:20,name:"Madhulika Dhiman",mgr:"Melissa Miracle",join:"2024-06-24",usd:19051},
+  {n:21,name:"Vaishnavi Amberu",mgr:"Jennifer Doaris",join:"2024-06-24",usd:16566},
+  {n:22,name:"Abdul Nazeeruddin",mgr:"Vinod Kashyap",join:"2023-05-29",usd:40988},
+  {n:23,name:"Gopalakrishna Budharam",mgr:"Vinod Kashyap",join:"2023-11-27",usd:50602},
+  {n:24,name:"Pothula K K Chowdhary",mgr:"Vinod Kashyap",join:"2024-06-24",usd:47229},
+  {n:25,name:"Sanjay Kumar",mgr:"John Holleman",join:"2023-09-18",usd:71702},
+  {n:26,name:"Renuka R Vikhore",mgr:"George Jiang",join:"2023-06-12",usd:60086},
+  {n:27,name:"Sandeep M Baliarsingh",mgr:"George Jiang",join:"2023-06-26",usd:50991},
+  {n:28,name:"Anil Kumar Yadav",mgr:"George Jiang",join:"2023-09-04",usd:57518},
+  {n:29,name:"Sagar Gadekar",mgr:"George Jiang",join:"2023-10-02",usd:70843},
+  {n:30,name:"Shabnum M. B.",mgr:"George Jiang",join:"2024-07-22",usd:37410},
+  {n:31,name:"Vishkha Dikshit",mgr:"George Jiang",join:"2024-08-05",usd:37410},
+  {n:32,name:"Killo Soloman Raju",mgr:"Mark White/Jill Delmas",join:"2023-05-03",usd:26519},
+  {n:33,name:"Sahana Bhavanthula",mgr:"Mark White/Jill Delmas",join:"2023-05-15",usd:30177},
+  {n:34,name:"Ganesh S Karaspalli",mgr:"Mark White/Jill Delmas",join:"2023-05-15",usd:24767},
+  {n:35,name:"Bharat Reddy",mgr:"Mark White/Jill Delmas",join:"2023-08-21",usd:21909},
+  {n:36,name:"Ashwini Bhamore",mgr:"Mark White/Jill Delmas",join:"2024-03-18",usd:18223},
+  {n:37,name:"Ganesh Patil",mgr:"Zahir Khan",join:"2023-10-25",usd:93351},
+  {n:38,name:"Sowmya GS",mgr:"Mina Miller",join:"2024-05-27",usd:73193},
+  {n:39,name:"Neeraj Ganani",mgr:"Mina Miller",join:"2024-06-10",usd:74548},
+  {n:40,name:"Akash Chatterjee",mgr:"Jenny Hyun",join:"2024-08-26",usd:53012},
+  {n:41,name:"Pallav Malu",mgr:"Reetika Singh",join:"2024-08-19",usd:48494},
+  {n:42,name:"Gnanendra Sagar",mgr:"Otilia Franco",join:"2024-09-16",usd:13253},
+  {n:43,name:"Amuthan K Mayandi",mgr:"Mina Miller",join:"2024-09-16",usd:87801},
+  {n:44,name:"Chintan Myakal",mgr:"Vinod Kashyap",join:"2024-09-30",usd:42093},
+  {n:45,name:"Farhan Shakoor",mgr:"George Jiang",join:"2024-10-14",usd:69578},
+  {n:46,name:"Vivek S Avverahalli",mgr:"Jenny Hyun",join:"2024-10-14",usd:59639},
+  {n:47,name:"Viresh Chibber",mgr:"Reina Tucker",join:"2024-11-25",usd:37952},
+  {n:48,name:"Jones Vivek",mgr:"Daniel Santos",join:"2025-01-06",usd:14307},
+  {n:49,name:"Paramasivan Arunachalam",mgr:"Mina Miller",join:"2025-01-20",usd:67771},
+  {n:50,name:"Ayush Jain",mgr:"Clarissa Bartlett",join:"2025-02-03",usd:22590},
+  {n:51,name:"Bommisetty Visweswara",mgr:"Clarissa Bartlett",join:"2025-02-03",usd:30121},
+  {n:52,name:"Anchal Dash",mgr:"Mark White/Jill Delmas",join:"2025-02-17",usd:17319},
+  {n:53,name:"Ramanathan S.",mgr:"Mina Miller",join:"2025-02-18",usd:58735},
+  {n:54,name:"Sahaya Watson Denzil D",mgr:"Jennifer Doaris",join:"2025-03-03",usd:15060},
+  {n:55,name:"Sagar Kapadiya",mgr:"George Jiang",join:"2025-03-17",usd:46687},
+  {n:56,name:"Komal Gogikar",mgr:"Jennifer Doaris",join:"2025-03-17",usd:15060},
+  {n:57,name:"Naitik Kyada",mgr:"George Jiang",join:"2025-03-17",usd:30121},
+  {n:58,name:"Vipin Venugopalan",mgr:"Daniel Santos",join:"2025-03-17",usd:22590},
+  {n:59,name:"Divya Meghana Lanka",mgr:"Reetika Singh",join:"2025-03-17",usd:52711},
+  {n:60,name:"Navneet Vinod Gadiya",mgr:"Akriti Kumar/Traci Galazra",join:"2025-03-31",usd:15813},
+  {n:61,name:"Animesh Singh",mgr:"George Jiang",join:"2025-03-31",usd:49699},
+  {n:62,name:"Akash Kadam",mgr:"Mark White/Jill Delmas",join:"2025-04-28",usd:18072},
+  {n:63,name:"Lokesh Dhakad",mgr:"Wyatt D'silva",join:"2025-04-28",usd:42169},
+  {n:64,name:"Pritam Salunkhe",mgr:"Daniel Santos",join:"2025-04-28",usd:16566},
+  {n:65,name:"Manisha Pai",mgr:"Jeff Qatsha",join:"2025-06-09",usd:19578},
+  {n:66,name:"Sager Srivastava",mgr:"Otilia Franco",join:"2025-06-23",usd:16566},
+  {n:67,name:"Sundaram Kumari",mgr:"Otilia Franco",join:"2025-06-23",usd:18072},
+  {n:68,name:"Neethu R",mgr:"Katie Medlen",join:"2025-06-23",usd:15060},
+  {n:69,name:"Avinash Gautam",mgr:"Tara Bernstein",join:"2025-07-07",usd:19578},
+  {n:70,name:"Rohit Sharma",mgr:"Otilia Franco",join:"2025-07-07",usd:22590},
+  {n:71,name:"Swapnil Pathak",mgr:"Akriti Kumar/Traci Galazra",join:"2025-07-21",usd:16566},
+  {n:72,name:"Deebanraj A",mgr:"Jennifer Doaris",join:"2025-08-18",usd:17319},
+  {n:73,name:"Sagar Bhusare",mgr:"Mark White/Jill Delmas",join:"2025-08-18",usd:18825},
+  {n:74,name:"Shubham Ghuge",mgr:"George Jiang",join:"2025-11-10",usd:42169}
+];
+let nextN=75;
+const OV={};
+EE.forEach(e=>{OV[e.n]={market:null,promo:false,rating:4};});
+let GM='correct';
+
+function sm(v){
+  GM=v;
+  ['low','correct','high'].forEach(m=>{document.getElementById('b'+m[0]).className='tb'+(m===v?' a'+m[0]:'');});
+  const mo=document.getElementById('mo');
+  mo.textContent=v==='low'?'+5%':'+0%';
+  mo.style.color=v==='low'?'#7A3F00':v==='correct'?'var(--green)':'var(--blue)';
+  rc();
+}
+
+function ce(e,base,prate,oR,nR){
+  const ov=OV[e.n]||{market:null,promo:false,rating:4};
+  const mkt=ov.market||GM,mb=mkt==='low'?5:0;
+  const rat=Math.max(0,Math.min(5,parseFloat(ov.rating)||0));
+  const rM=interp(rat);
+  const{m:tM,l,mo}=getTen(e.join);
+  const aT=+(base*tM).toFixed(4);
+  const aMkt=+(aT+mb).toFixed(4);
+  const aR=+(aMkt*rM).toFixed(4);
+  const pb=(ov.promo&&tM>0)?prate:0;
+  const fh=+(aR+pb).toFixed(2);
+  const oI=e.usd*oR,hI=oI*fh/100,nI=oI+hI,nU=nI/nR;
+  const dU=nU-e.usd,pU=(dU/e.usd)*100;
+  return{l,mo,tM,rat,rM,aT,aMkt,aR,pb,fh,oI,hI,nI,nU,dU,pU,mkt};
+}
+
+const fi=n=>'₹'+Math.round(n).toLocaleString('en-IN');
+const fu=n=>(n<0?'−':'+')+' $'+Math.round(Math.abs(n)).toLocaleString('en-US');
+const fd=s=>{if(!s)return'—';const d=new Date(s);return isNaN(d)?s:d.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'2-digit'});};
+
+function addEmp(){
+  const name=document.getElementById('new-name').value.trim();
+  const mgr=document.getElementById('new-mgr').value.trim()||'—';
+  const join=document.getElementById('new-join').value;
+  const usd=parseFloat(document.getElementById('new-usd').value);
+  if(!name){alert('Please enter employee name.');return;}
+  if(!join){alert('Please enter joining date.');return;}
+  if(!usd||usd<=0){alert('Please enter a valid salary.');return;}
+  const n=nextN++;
+  EE.push({n,name,mgr,join,usd});
+  OV[n]={market:null,promo:false,rating:4};
+  ['new-name','new-mgr','new-join','new-usd'].forEach(id=>document.getElementById(id).value='');
+  rc();
+}
+
+function delEmp(n){
+  if(!confirm('Remove this employee?'))return;
+  EE=EE.filter(e=>e.n!==n);
+  delete OV[n];
+  rc();
+}
+
+function rc(){
+  const base=+document.getElementById('base').value,prate=+document.getElementById('pr').value;
+  const oR=+document.getElementById('or').value||83,nR=+document.getElementById('nr').value||88;
+  document.getElementById('bo').textContent=base.toFixed(1)+'%';
+  document.getElementById('po').textContent=prate+'%';
+  let tc=0,tn=0,c1=0,c2=0,c0=0;
+  EE.forEach(e=>{const r=ce(e,base,prate,oR,nR);tc+=e.usd;tn+=r.nU;r.l==='full'?c1++:r.l==='partial'?c2++:c0++;});
+  const nd=tn-tc;
+  document.getElementById('tot').textContent=EE.length;
+  document.getElementById('emp-count-badge').textContent=EE.length+' Employees';
+  document.getElementById('sc').textContent='$'+Math.round(tc).toLocaleString('en-US');
+  document.getElementById('sn').textContent='$'+Math.round(tn).toLocaleString('en-US');
+  document.getElementById('sd').textContent=fu(nd);
+  document.getElementById('sd').className='mv '+(nd>=0?'gn':'rd');
+  document.getElementById('s1').textContent=c1;
+  document.getElementById('s2').textContent=c2;
+  document.getElementById('s0').textContent=c0;
+  rt();
+}
+
+function rt(){
+  const base=+document.getElementById('base').value,prate=+document.getElementById('pr').value;
+  const oR=+document.getElementById('or').value||83,nR=+document.getElementById('nr').value||88;
+  const q=document.getElementById('sq').value.toLowerCase();
+  const fm=document.getElementById('fm').value,fe=document.getElementById('fe').value;
+  const F=EE.filter(e=>{
+    const r=ce(e,base,prate,oR,nR);
+    return(!q||e.name.toLowerCase().includes(q)||e.mgr.toLowerCase().includes(q))&&
+           (!fm||(OV[e.n]?.market||GM)===fm)&&(!fe||r.l===fe);
+  });
+  document.getElementById('tb').innerHTML=F.map(e=>{
+    const r=ce(e,base,prate,oR,nR);
+    const ov=OV[e.n]||{market:null,promo:false,rating:4};
+    const mO=`<option value="" ${!ov.market?'selected':''}>Default</option><option value="low" ${ov.market==='low'?'selected':''}>Low</option><option value="correct" ${ov.market==='correct'?'selected':''}>Correct</option><option value="high" ${ov.market==='high'?'selected':''}>High</option>`;
+    const sb=r.l==='full'?`<span class="bi e">Full×1</span>`:r.l==='partial'?`<span class="bi p">×${r.tM.toFixed(2)}·${r.mo}mo</span>`:`<span class="bi n">Ineligible</span>`;
+    const uc=r.dU>=0?'var(--green)':'var(--red)';
+    const cs=r.l==='none'?'opacity:0.4;pointer-events:none;':'';
+    const pc=r.pb>0?`<span class="pc">+${r.pb}%</span>`:`<span style="color:var(--muted)">—</span>`;
+    return`<tr class="${r.l==='none'?'ine':''}">
+      <td style="color:var(--muted);font-weight:700">${e.n}</td>
+      <td style="font-weight:700">${e.name}</td>
+      <td style="color:var(--muted);font-size:10px;max-width:100px;overflow:hidden;text-overflow:ellipsis">${e.mgr}</td>
+      <td style="font-size:10px;color:var(--muted)">${fd(e.join)}</td>
+      <td>${sb}</td>
+      <td style="font-weight:700">$${Math.round(e.usd).toLocaleString('en-US')}</td>
+      <td style="${cs}"><select style="font-size:10px;padding:2px 5px;" onchange="setM(${e.n},this.value)">${mO}</select></td>
+      <td style="${cs}"><label style="display:flex;align-items:center;gap:4px;cursor:pointer;"><input type="checkbox" ${ov.promo?'checked':''} onchange="setP(${e.n},this.checked)"><span style="font-size:11px">Yes</span></label></td>
+      <td><input class="ri" type="number" value="${ov.rating}" min="0" max="5" step="0.1" style="${r.l==='none'?'opacity:0.4;pointer-events:none;':''}" oninput="setR(${e.n},this.value)"></td>
+      <td><span class="mb">×${r.rM.toFixed(3)}</span></td>
+      <td style="font-weight:700;color:${r.l==='none'?'var(--red)':r.l==='full'?'var(--green)':'var(--blue)'}">${r.l==='none'?'0':r.tM.toFixed(2)}</td>
+      <td style="color:var(--muted)">${base.toFixed(1)}%</td>
+      <td style="color:var(--muted)">${r.aT.toFixed(2)}%</td>
+      <td style="color:var(--muted)">${r.aR.toFixed(2)}%</td>
+      <td>${pc}</td>
+      <td style="font-weight:700;color:${r.fh>0?'var(--green)':'var(--muted)'};font-size:12px">${r.fh.toFixed(2)}%</td>
+      <td style="color:var(--muted);font-size:10px">${fi(r.oI)}</td>
+      <td style="color:var(--muted)">${r.hI>0?fi(r.hI):'—'}</td>
+      <td style="font-size:10px">${fi(r.nI)}</td>
+      <td style="font-weight:700">$${Math.round(r.nU).toLocaleString('en-US')}</td>
+      <td style="font-weight:700;color:${uc}">${fu(r.dU)}</td>
+      <td style="font-weight:700;color:${uc}">${(r.pU>=0?'+':'')+r.pU.toFixed(2)+'%'}</td>
+      <td><button class="del-btn" onclick="delEmp(${e.n})">✕</button></td>
+    </tr>`;
+  }).join('');
+}
+
+function setM(n,v){if(!OV[n])OV[n]={market:null,promo:false,rating:4};OV[n].market=v||null;rc();}
+function setP(n,v){if(!OV[n])OV[n]={market:null,promo:false,rating:4};OV[n].promo=v;rc();}
+function setR(n,v){const x=parseFloat(v);if(!OV[n])OV[n]={market:null,promo:false,rating:4};if(!isNaN(x))OV[n].rating=Math.max(0,Math.min(5,x));rc();}
+
+// ── REPORT ──
+function openReport(){
+  // Populate manager dropdown
+  const mgrs=['all',...new Set(EE.map(e=>e.mgr).filter(Boolean).sort())];
+  const sel=document.getElementById('rp-mgr-filter');
+  sel.innerHTML=mgrs.map(m=>`<option value="${m}">${m==='all'?'All Managers':m}</option>`).join('');
+  renderReport();
+  document.getElementById('reportPanel').classList.add('open');
+  document.getElementById('overlay').classList.add('open');
+}
+
+function closeReport(){
+  document.getElementById('reportPanel').classList.remove('open');
+  document.getElementById('overlay').classList.remove('open');
+}
+
+function renderReport(){
+  const base=+document.getElementById('base').value,prate=+document.getElementById('pr').value;
+  const oR=+document.getElementById('or').value||83,nR=+document.getElementById('nr').value||88;
+  const filterMgr=document.getElementById('rp-mgr-filter').value;
+  const showUSD=document.getElementById('show-usd-change').checked;
+  const today=new Date().toLocaleDateString('en-GB',{day:'2-digit',month:'long',year:'numeric'});
+
+  // Group by manager
+  const groups={};
+  EE.forEach(e=>{
+    if(filterMgr!=='all'&&e.mgr!==filterMgr)return;
+    const m=e.mgr||'Unassigned';
+    if(!groups[m])groups[m]=[];
+    groups[m].push(e);
+  });
+
+  if(Object.keys(groups).length===0){
+    document.getElementById('rp-body').innerHTML=`<div class="no-data">No employees found for the selected filter.</div>`;
+    return;
+  }
+
+  let html=`<div class="report-content">
+    <div class="rep-header">
+      <div class="rep-company">Altaa Vistaa Business Solutions</div>
+      <div class="rep-title">Appraisal Report — FY 2025–26</div>
+      <div class="rep-sub">Vituity India Team ${filterMgr!=='all'?'· Manager: '+filterMgr:''}</div>
+      <div class="rep-date">Generated on ${today}</div>
+    </div>`;
+
+  let grandCur=0,grandNew=0,grandCount=0;
+
+  Object.entries(groups).sort(([a],[b])=>a.localeCompare(b)).forEach(([mgr,emps])=>{
+    let mgrCur=0,mgrNew=0,eligible=0;
+    const rows=emps.map(e=>{
+      const r=ce(e,base,prate,oR,nR);
+      mgrCur+=e.usd; mgrNew+=r.nU;
+      grandCur+=e.usd; grandNew+=r.nU; grandCount++;
+      if(r.l!=='none')eligible++;
+      const hikeClass=r.fh>0?'hike-pos':'hike-zero';
+      const status=r.l==='full'?'Full cycle':r.l==='partial'?`Partial (${r.mo}mo)`:'Not eligible';
+      return`<tr>
+        <td>${e.name}</td>
+        <td style="color:#6B6B7E;font-size:11px">${status}</td>
+        <td>$${Math.round(e.usd).toLocaleString('en-US')}</td>
+        <td>${r.l!=='none'?`<span class="hike-pill ${hikeClass}">${r.fh.toFixed(2)}%</span>`:`<span class="hike-pill hike-zero">0% — Ineligible</span>`}</td>
+        <td style="font-weight:700">$${Math.round(r.nU).toLocaleString('en-US')}</td>
+        <td>${fi(r.nI)}</td>
+        ${showUSD?`<td style="font-weight:700;color:${r.dU>=0?'#1A7A5E':'#B03030'}">${fu(r.dU)}</td>`:''}
+      </tr>`;
+    }).join('');
+
+    const mgrDelta=mgrNew-mgrCur;
+    html+=`<div class="mgr-block">
+      <div class="mgr-name-bar">
+        <div class="mgr-name">Manager: ${mgr}</div>
+        <div class="mgr-stats">
+          <div>${emps.length} employees &nbsp;·&nbsp; <span>${eligible} eligible</span></div>
+          <div>Current: <span>$${Math.round(mgrCur).toLocaleString('en-US')}</span></div>
+          <div>New: <span>$${Math.round(mgrNew).toLocaleString('en-US')}</span></div>
+          <div>Δ: <span>${fu(mgrDelta)}</span></div>
+        </div>
+      </div>
+      <table class="rep-table">
+        <thead><tr>
+          <th>Employee</th><th>Tenure Status</th><th>Current Salary (USD)</th>
+          <th>Hike %</th><th>New Salary (USD)</th><th>New Salary (INR)</th>
+          ${showUSD?'<th>USD Change</th>':''}
+        </tr></thead>
+        <tbody>
+          ${rows}
+          <tr class="mgr-total-row">
+            <td colspan="2">Total (${mgr})</td>
+            <td>$${Math.round(mgrCur).toLocaleString('en-US')}</td>
+            <td>—</td>
+            <td>$${Math.round(mgrNew).toLocaleString('en-US')}</td>
+            <td>—</td>
+            ${showUSD?`<td style="color:${mgrDelta>=0?'#1A7A5E':'#B03030'}">${fu(mgrDelta)}</td>`:''}
+          </tr>
+        </tbody>
+      </table>
+    </div>`;
+  });
+
+  // Grand total if all managers shown
+  if(filterMgr==='all'){
+    const gd=grandNew-grandCur;
+    html+=`<div class="mgr-block" style="margin-top:1rem;">
+      <div class="mgr-name-bar" style="background:#1A1A28;">
+        <div class="mgr-name">Grand Total — All Managers (${grandCount} employees)</div>
+        <div class="mgr-stats">
+          <div>Current: <span>$${Math.round(grandCur).toLocaleString('en-US')}</span></div>
+          <div>New: <span>$${Math.round(grandNew).toLocaleString('en-US')}</span></div>
+          ${showUSD?`<div>Net change: <span>${fu(gd)}</span></div>`:''}
+        </div>
+      </div>
+    </div>`;
+  }
+
+  html+=`<div class="rep-footer">
+    Confidential · Altaa Vistaa Business Solutions · Generated ${today}<br>
+    Exchange rates: Old ₹${oR}/$ → New ₹${nR}/$ · Base appraisal: ${base}% · Promotion bonus: ${prate}%
+  </div></div>`;
+
+  document.getElementById('rp-body').innerHTML=html;
+}
+
+function printReport(){
+  const content=document.getElementById('rp-body').innerHTML;
+  const w=window.open('','_blank');
+  w.document.write(`<!DOCTYPE html><html><head><title>Appraisal Report — AVPL</title>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:12px;color:#2E2E3A;padding:24px;}
+    .rep-header{text-align:center;margin-bottom:1.5rem;padding-bottom:1rem;border-bottom:2px solid #F5A623;}
+    .rep-company{font-size:10px;font-weight:700;color:#F5A623;letter-spacing:0.1em;text-transform:uppercase;}
+    .rep-title{font-size:20px;font-weight:700;color:#2E2E3A;margin-top:4px;}
+    .rep-sub,.rep-date{font-size:11px;color:#7B7B8F;margin-top:3px;}
+    .mgr-block{margin-bottom:1.5rem;page-break-inside:avoid;}
+    .mgr-name-bar{background:#2E2E3A;color:#fff;padding:8px 14px;border-radius:8px 8px 0 0;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;}
+    .mgr-name{font-size:12px;font-weight:700;}
+    .mgr-stats{font-size:10px;color:rgba(255,255,255,0.6);display:flex;gap:12px;flex-wrap:wrap;}
+    .mgr-stats span{color:#F5A623;font-weight:700;}
+    .rep-table{width:100%;border-collapse:collapse;border:1px solid #E2E2EC;border-top:none;}
+    .rep-table th{background:#F4F4F7;font-size:9px;font-weight:700;color:#7B7B8F;text-transform:uppercase;letter-spacing:0.06em;padding:6px 10px;text-align:left;border-bottom:1px solid #E2E2EC;}
+    .rep-table td{padding:7px 10px;font-size:11px;border-bottom:1px solid #E2E2EC;}
+    .rep-table tr:last-child td{border-bottom:none;}
+    .hike-pill{display:inline-block;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;}
+    .hike-pos{background:#E6F5EF;color:#1A7A5E;}
+    .hike-zero{background:#FCECEC;color:#B03030;}
+    .mgr-total-row td{background:#FAFAFA;font-weight:700;font-size:11px;border-top:1.5px solid #E2E2EC;}
+    .rep-footer{margin-top:1.5rem;padding-top:1rem;border-top:1px solid #E2E2EC;text-align:center;font-size:10px;color:#7B7B8F;line-height:1.7;}
+    @media print{body{padding:12px;}}
+  </style></head><body>${content}</body></html>`);
+  w.document.close();
+  setTimeout(()=>w.print(),400);
+}
+
+function copyEmailBody(){
+  const base=+document.getElementById('base').value,prate=+document.getElementById('pr').value;
+  const oR=+document.getElementById('or').value||83,nR=+document.getElementById('nr').value||88;
+  const filterMgr=document.getElementById('rp-mgr-filter').value;
+  const showUSD=document.getElementById('show-usd-change').checked;
+  const today=new Date().toLocaleDateString('en-GB',{day:'2-digit',month:'long',year:'numeric'});
+  let text=`APPRAISAL REPORT — FY 2025-26\nAltaa Vistaa Business Solutions · Vituity India Team\nGenerated: ${today}\n`;
+  text+=`Parameters: Base ${base}% · Promotion ${prate}% · Rate ₹${oR}/$ → ₹${nR}/$\n`;
+  text+='='.repeat(70)+'\n\n';
+
+  const groups={};
+  EE.forEach(e=>{
+    if(filterMgr!=='all'&&e.mgr!==filterMgr)return;
+    const m=e.mgr||'Unassigned';
+    if(!groups[m])groups[m]=[];
+    groups[m].push(e);
+  });
+
+  let grandCur=0,grandNew=0;
+  Object.entries(groups).sort(([a],[b])=>a.localeCompare(b)).forEach(([mgr,emps])=>{
+    let mgrCur=0,mgrNew=0;
+    text+=`MANAGER: ${mgr}\n${'-'.repeat(50)}\n`;
+    const header=showUSD
+      ?`${'Employee'.padEnd(30)} ${'Current $'.padStart(10)} ${'Hike%'.padStart(8)} ${'New $'.padStart(10)} ${'USD Δ'.padStart(10)}\n`
+      :`${'Employee'.padEnd(30)} ${'Current $'.padStart(10)} ${'Hike%'.padStart(8)} ${'New $'.padStart(10)}\n`;
+    text+=header;
+    emps.forEach(e=>{
+      const r=ce(e,base,prate,oR,nR);
+      mgrCur+=e.usd;mgrNew+=r.nU;grandCur+=e.usd;grandNew+=r.nU;
+      const hike=r.l!=='none'?r.fh.toFixed(2)+'%':'Ineligible';
+      text+=showUSD
+        ?`${e.name.padEnd(30)} ${('$'+Math.round(e.usd).toLocaleString()).padStart(10)} ${hike.padStart(8)} ${('$'+Math.round(r.nU).toLocaleString()).padStart(10)} ${fu(r.nU-e.usd).padStart(10)}\n`
+        :`${e.name.padEnd(30)} ${('$'+Math.round(e.usd).toLocaleString()).padStart(10)} ${hike.padStart(8)} ${('$'+Math.round(r.nU).toLocaleString()).padStart(10)}\n`;
+    });
+    const d=mgrNew-mgrCur;
+    text+=showUSD
+      ?`${'TOTAL'.padEnd(30)} ${('$'+Math.round(mgrCur).toLocaleString()).padStart(10)} ${''.padStart(8)} ${('$'+Math.round(mgrNew).toLocaleString()).padStart(10)} ${fu(d).padStart(10)}\n\n`
+      :`${'TOTAL'.padEnd(30)} ${('$'+Math.round(mgrCur).toLocaleString()).padStart(10)} ${''.padStart(8)} ${('$'+Math.round(mgrNew).toLocaleString()).padStart(10)}\n\n`;
+  });
+
+  if(filterMgr==='all'&&showUSD){
+    text+='='.repeat(70)+'\n';
+    text+=`GRAND TOTAL: Current $${Math.round(grandCur).toLocaleString()} → New $${Math.round(grandNew).toLocaleString()} · Net change ${fu(grandNew-grandCur)}\n`;
+  }
+
+  navigator.clipboard.writeText(text).then(()=>{
+    alert('✅ Report copied to clipboard!\n\nPaste it directly into your email body (Ctrl+V).');
+  }).catch(()=>{
+    alert('Could not auto-copy. Please manually select and copy the report from the panel.');
+  });
+}
+
+rc();
+</script>
+</body>
+</html>
