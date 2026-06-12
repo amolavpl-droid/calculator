@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AVPL Annual Quote Generator</title>
+<title></title>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -126,14 +126,13 @@
   .placeholder { text-align: center; padding: 60px 20px; color: var(--charcoal-mid); }
   .placeholder .ic { font-size: 48px; opacity: 0.25; margin-bottom: 12px; }
 
+  /* PRINT - hide everything except quote-doc */
   @media print {
-    @page { margin: 14mm 10mm 10mm 10mm; size: A4; }
-    html, body { margin: 0 !important; padding: 0 !important; background: white; }
-    .app-header, .form-panel, .modal-overlay, .preview-hdr { display: none !important; }
-    .app-body { display: block !important; padding: 0 !important; margin: 0 !important; }
-    .preview-panel { box-shadow: none !important; border-radius: 0 !important; }
-    .preview-body { padding: 0 !important; margin: 0 !important; }
-    #quote-doc { max-width: 100% !important; }
+    @page { margin: 0; size: A4; }
+    html, body { margin: 0 !important; padding: 0 !important; background: white; width: 100%; }
+    body * { visibility: hidden; }
+    #quote-doc, #quote-doc * { visibility: visible; }
+    #quote-doc { position: absolute; left: 20mm; top: 15mm; right: 20mm; width: auto; }
   }
 </style>
 </head>
@@ -186,7 +185,9 @@
       <div class="fg"><label>Prepared By</label><input id="preparedBy" value="Smruti Dhongde"></div>
       <hr class="divider">
       <div class="sl">Consultants</div>
-      <div class="consultants-list" id="consultantsList"></div>
+      <div class="consultants-list" id="consultantsList">
+        <div style="text-align:center;padding:14px;color:var(--charcoal-mid);font-size:12px;background:#F7F8FC;border-radius:8px;border:1.5px dashed var(--silver);">No consultants added yet.<br>Click below to add.</div>
+      </div>
       <button class="btn-add" onclick="openModal()">&#43; Add Consultant</button>
       <div class="grand-box" id="grandBox" style="display:none">
         <div class="grand-row"><span class="lbl">Consultants</span><span class="val" id="gCount">0</span></div>
@@ -252,16 +253,11 @@ function addConsultant() {
   if(!name || !role || !inr) { alert('Please fill in Name, Role and Salary.'); return; }
   var total = (inr/rate)*(1+pct/100);
   consultants.push({name:name, role:role, inr:inr, rate:rate, pct:pct, total:total});
-  renderCards();
-  updateGrand();
-  closeModal();
-  gen();
+  renderCards(); updateGrand(); closeModal(); gen();
 }
 
 function removeConsultant(i) {
-  consultants.splice(i,1);
-  renderCards();
-  updateGrand();
+  consultants.splice(i,1); renderCards(); updateGrand();
   if(consultants.length > 0) gen(); else resetPreview();
 }
 
@@ -303,41 +299,28 @@ function gen() {
     rows += '<tr><td>'+c.name+' – '+c.role+'</td><td>'+c.total.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})+'</td></tr>';
   });
   document.getElementById('quote-doc').innerHTML =
-  '<div class="q-head">'+
-    '<div class="q-left"><img src="'+LOGO+'" alt="AVPL"><div>'+
-    '<div class="q-cname">Altaa Vistaa Business Solutions Pvt Ltd.</div>'+
-    '<div class="q-csub">806, 8th Floor, East Court, Phoenix Market City<br>Pune, Maharashtra, India<br>(GSTIN-27AAKCA7709F1ZK )<br>LUT No. AD27032697688B<br>LUT Date- 27<sup>th</sup> March, 2026<br><a href="http://www.avplonline.com" target="_blank">www.avplonline.com</a><br>Mobile: +91 9860808888<br>Prepared by: '+pb+'</div>'+
-    '</div></div>'+
-    '<div class="q-right"><div class="q-title">Annual <span>Quote</span></div>'+
-    '<table class="q-mt"><tr><td>DATE</td><td>'+dt+'</td></tr><tr><td>QUOTE</td><td>'+qn+'</td></tr><tr><td>CUSTOMER</td><td>'+cn+'</td></tr></table>'+
-    '</div></div>'+
+  '<div class="q-head"><div class="q-left"><img src="'+LOGO+'" alt="AVPL"><div>'+
+  '<div class="q-cname">Altaa Vistaa Business Solutions Pvt Ltd.</div>'+
+  '<div class="q-csub">806, 8th Floor, East Court, Phoenix Market City<br>Pune, Maharashtra, India<br>(GSTIN-27AAKCA7709F1ZK )<br>LUT No. AD27032697688B<br>LUT Date- 27<sup>th</sup> March, 2026<br><a href="http://www.avplonline.com" target="_blank">www.avplonline.com</a><br>Mobile: +91 9860808888<br>Prepared by: '+pb+'</div>'+
+  '</div></div><div class="q-right"><div class="q-title">Annual <span>Quote</span></div>'+
+  '<table class="q-mt"><tr><td>DATE</td><td>'+dt+'</td></tr><tr><td>QUOTE</td><td>'+qn+'</td></tr><tr><td>CUSTOMER</td><td>'+cn+'</td></tr></table></div></div>'+
   '<div class="q-abox"><span class="q-albl">Quote To</span><div class="q-aname">'+cn+'</div><div class="q-adet">'+a1+'<br>'+a2+'<br>'+cc+'</div></div>'+
-  '<div class="q-tw"><table class="q-tbl">'+
-    '<thead><tr><th>Description</th><th>Amount $</th></tr></thead>'+
-    '<tbody>'+rows+'</tbody>'+
-    '<tfoot><tr><td>Total</td><td>$ '+grandTotal.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})+'</td></tr></tfoot>'+
-  '</table></div>'+
+  '<div class="q-tw"><table class="q-tbl"><thead><tr><th>Description</th><th>Amount $</th></tr></thead><tbody>'+rows+'</tbody>'+
+  '<tfoot><tr><td>Total</td><td>$ '+grandTotal.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})+'</td></tr></tfoot></table></div>'+
   '<div class="q-pay">Payment due – Monthly</div>'+
   '<div class="q-box"><div class="q-box-t">Banking Details</div>'+
-    '<div class="q-br"><span class="bl">Company Name</span><span class="bv">Altaa Vistaa Business Solutions Pvt. Ltd</span></div>'+
-    '<div class="q-br"><span class="bl">Bank Name</span><span class="bv">ICICI Bank, Viman Nagar</span></div>'+
-    '<div class="q-br"><span class="bl">Bank Address</span><span class="bv">Panchshil Tech Park, Opp Hotel Brook Side, Viman Nagar, Pune 411006</span></div>'+
-    '<div class="q-br"><span class="bl">Account Number</span><span class="bv">091505001697</span></div>'+
-    '<div class="q-br"><span class="bl">IFSC Code</span><span class="bv">ICIC0000915</span></div>'+
-    '<div class="q-br"><span class="bl">Swift Code</span><span class="bv">ICICINBBCTS</span></div>'+
-  '</div>'+
-  '<div class="q-foot">'+
-    '<div class="q-foot-l"><p>Have any questions about this price quote, please contact</p><strong>Neeta – neeta.ganjoo@avplonline.com</strong></div>'+
-    '<img src="'+LOGO+'" alt="AVPL">'+
-    '<div class="q-foot-r">Thank You for Your Business!</div>'+
-  '</div>';
+  '<div class="q-br"><span class="bl">Company Name</span><span class="bv">Altaa Vistaa Business Solutions Pvt. Ltd</span></div>'+
+  '<div class="q-br"><span class="bl">Bank Name</span><span class="bv">ICICI Bank, Viman Nagar</span></div>'+
+  '<div class="q-br"><span class="bl">Bank Address</span><span class="bv">Panchshil Tech Park, Opp Hotel Brook Side, Viman Nagar, Pune 411006</span></div>'+
+  '<div class="q-br"><span class="bl">Account Number</span><span class="bv">091505001697</span></div>'+
+  '<div class="q-br"><span class="bl">IFSC Code</span><span class="bv">ICIC0000915</span></div>'+
+  '<div class="q-br"><span class="bl">Swift Code</span><span class="bv">ICICINBBCTS</span></div></div>'+
+  '<div class="q-foot"><div class="q-foot-l"><p>Have any questions about this price quote, please contact</p><strong>Neeta – neeta.ganjoo@avplonline.com</strong></div>'+
+  '<img src="'+LOGO+'" alt="AVPL"><div class="q-foot-r">Thank You for Your Business!</div></div>';
 }
 
 function printQuote() {
-  var t = document.title;
-  document.title = '';
   window.print();
-  document.title = t;
 }
 
 window.addEventListener('load', function() { renderCards(); });
